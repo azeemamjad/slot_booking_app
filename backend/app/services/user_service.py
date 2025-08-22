@@ -4,7 +4,8 @@ from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from fastapi import HTTPException, status
 
-from app.models.user import User, UserRole
+from app.models.user import User
+from app.schemas.user import UserRole
 from app.schemas.user import UserCreate, UserUpdate, UserOut, UserDeleteResponse
 from app.core.security import get_password_hash, verify_password
 
@@ -78,14 +79,15 @@ class UserService:
         # Hash the password
         hashed_password = get_password_hash(user_data.password)
         
-        # Create user object
+        # Create user object - convert schema enum to model enum
+        from app.models.user import UserRole as ModelUserRole
         user = User(
             email=user_data.email,
             username=user_data.username,
             password=hashed_password,
             description=user_data.description,
             profile_picture=user_data.profile_picture,
-            role=UserRole(user_data.role.value),
+            role=ModelUserRole(user_data.role.value),
             department_id=user_data.department_id
         )
         
@@ -136,7 +138,8 @@ class UserService:
             update_data["password"] = get_password_hash(update_data["password"])
         
         if "role" in update_data:
-            update_data["role"] = UserRole(update_data["role"].value)
+            from app.models.user import UserRole as ModelUserRole
+            update_data["role"] = ModelUserRole(update_data["role"].value)
         
         for field, value in update_data.items():
             setattr(user, field, value)

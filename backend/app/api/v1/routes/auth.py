@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
@@ -6,6 +7,12 @@ from app.db.session import get_db
 from app.services.auth_service import AuthService
 from app.schemas.auth import LoginRequest, TokenResponse, LogoutResponse
 from app.schemas.user import UserOut
+
+# Security scheme for JWT Bearer tokens
+security = HTTPBearer(
+    scheme_name="JWT Bearer",
+    description="Enter your JWT token in the format: Bearer <token>"
+)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -31,39 +38,23 @@ async def logout(
 
 @router.get("/me", response_model=UserOut)
 async def get_current_user(
-    authorization: Optional[str] = Header(None),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
 ):
     """Get current authenticated user information."""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    token = authorization.replace("Bearer ", "")
     auth_service = AuthService(db)
-    return await auth_service.get_current_user(token)
+    return await auth_service.get_current_user(credentials.credentials)
 
 
 @router.get("/verify")
 async def verify_token(
-    authorization: Optional[str] = Header(None),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
 ):
     """Verify JWT token validity."""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    token = authorization.replace("Bearer ", "")
     auth_service = AuthService(db)
     
-    token_data = auth_service.verify_token(token)
+    token_data = auth_service.verify_token(credentials.credentials)
     if not token_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

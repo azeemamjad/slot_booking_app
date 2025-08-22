@@ -1,28 +1,27 @@
-from fastapi import Depends, HTTPException, status, Header
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
 from app.db.session import get_db
 from app.services.auth_service import AuthService
 from app.schemas.user import UserOut
-from app.models.user import UserRole
+from app.schemas.user import UserRole
+
+# Security scheme for JWT Bearer tokens
+security = HTTPBearer(
+    scheme_name="JWT Bearer",
+    description="Enter your JWT token in the format: Bearer <token>"
+)
 
 
 async def get_current_user(
-    authorization: Optional[str] = Header(None),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
 ) -> UserOut:
     """Dependency to get current authenticated user."""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    token = authorization.replace("Bearer ", "")
     auth_service = AuthService(db)
-    return await auth_service.get_current_user(token)
+    return await auth_service.get_current_user(credentials.credentials)
 
 
 async def get_current_active_user(

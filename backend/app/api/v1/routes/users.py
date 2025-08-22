@@ -4,7 +4,7 @@ from typing import List
 
 from app.db.session import get_db
 from app.services.user_service import UserService
-from app.schemas.user import UserCreate, UserUpdate, UserOut, UserDeleteResponse
+from app.schemas.user import UserCreate, UserUpdate, UserOut, UserDeleteResponse, UserRole
 from app.core.dependencies import get_current_user, get_current_admin_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -30,7 +30,7 @@ async def get_user(
 ):
     """Get a specific user by ID (Users can only view their own profile, admins can view any)."""
     # Users can only view their own profile, admins can view any
-    if current_user.role.value != "admin" and current_user.id != user_id:
+    if current_user.role != UserRole.admin and current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions to view this user"
@@ -60,7 +60,7 @@ async def update_user(
 ):
     """Update an existing user (Users can only update their own profile, admins can update any)."""
     # Users can only update their own profile, admins can update any
-    if current_user.role.value != "admin" and current_user.id != user_id:
+    if current_user.role != UserRole.admin and current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions to update this user"
