@@ -1,13 +1,15 @@
-import os
-from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
-load_dotenv()
 
-class Settings:
-    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "FastAPI Project")
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/dbname")
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your_secret_key")
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "Slot Booking App"
+    DATABASE_URL: str
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    DEBUG: bool = False
+
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
