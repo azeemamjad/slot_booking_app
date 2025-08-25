@@ -5,8 +5,9 @@ from typing import Optional
 
 from app.db.session import get_db
 from app.services.auth_service import AuthService
+from app.services.user_service import UserService
 from app.schemas.auth import LoginRequest, TokenResponse, LogoutResponse
-from app.schemas.user import UserOut
+from app.schemas.user import UserOut, UserCreate
 
 # Security scheme for JWT Bearer tokens
 security = HTTPBearer(
@@ -15,6 +16,16 @@ security = HTTPBearer(
 )
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+async def register(
+    user_data: UserCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    """Register a new user (Public endpoint - no authentication required)."""
+    user_service = UserService(db)
+    return await user_service.create_user(user_data)
 
 
 @router.post("/login", response_model=TokenResponse)

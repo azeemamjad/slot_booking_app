@@ -28,6 +28,8 @@ class GameOut(BaseModel):
     title: str
     description: Optional[str] = None
     background: Optional[str] = None
+    total_slots: int
+    available_slots: int
     created_at: datetime
     updated_at: datetime
 

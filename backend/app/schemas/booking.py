@@ -5,9 +5,9 @@ from enum import Enum
 
 
 class BookingStatus(str, Enum):
-    pending = "pending"
-    confirmed = "confirmed"
-    cancelled = "cancelled"
+    pending = "PENDING"
+    confirmed = "CONFIRMED"
+    cancelled = "CANCELLED"
 
 
 # ------------------ Base ------------------ #

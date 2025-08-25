@@ -25,7 +25,7 @@ class DepartmentOut(BaseModel):
     id: int
     title: str
     description: Optional[str] = None
-    slot_booked: int
+    slot_booked: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 

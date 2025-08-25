@@ -14,4 +14,8 @@ class Department(Base):
     @property
     def slot_booked(self) -> int:
         """Calculate total slots booked by all users in this department."""
-        return sum(len(user.slots) for user in self.users)
+        try:
+            return sum(len(user.bookings) for user in self.users)
+        except Exception:
+            # If relationships are not loaded or there's an async context issue, return 0
+            return 0

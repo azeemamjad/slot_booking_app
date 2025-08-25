@@ -6,9 +6,9 @@ from app.models.base import Base
 
 
 class BookingStatus(enum.Enum):
-    PENDING = "pending"
-    CONFIRMED = "confirmed"
-    CANCELLED = "cancelled"
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    CANCELLED = "CANCELLED"
 
 
 class Booking(Base):
