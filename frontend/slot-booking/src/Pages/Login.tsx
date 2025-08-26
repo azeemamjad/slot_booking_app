@@ -14,6 +14,11 @@ const Login = () => {
     if (identifier && password) {
       // Simulate login
       localStorage.setItem('access-token', '300');
+      if (identifier.includes("admin"))
+      {
+        localStorage.setItem('role', 'admin');
+      }
+      window.dispatchEvent(new Event("storage"));
       navigate('/');
     } else {
       setError("Please enter your email/username and password.");
