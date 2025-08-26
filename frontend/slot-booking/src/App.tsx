@@ -1,19 +1,27 @@
-import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+
+import ProtectedRoute from "./ProtectedRoute";
+import AuthRoute from "./AuthRoutes";
+
+import Dashboard from "./Pages/Dashboard";
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
 
 function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-white flex flex-col items-center">
       <Header />
+      <Routes>
+        {/* Authentication Routes  */}
+        <Route path="/login" element={<AuthRoute children={<Login />} />} ></Route>
+        <Route path="/signup" element={<AuthRoute children={<Signup />} />} ></Route>
 
-      {/* Main container */}
-      <main className="flex-1 w-full max-w-5xl p-6">
-        <div className="flex justify-center items-center h-64 text-gray-500 italic">
-          Slot Dashboard will appear here...
-        </div>
-      </main>
-
+        {/* Application Routes */}
+        <Route path="/" element={<ProtectedRoute children={<Dashboard />} />} ></Route>
+      </Routes>
       <Footer />
     </div>
   );
