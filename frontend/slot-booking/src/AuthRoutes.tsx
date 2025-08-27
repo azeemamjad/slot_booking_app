@@ -26,7 +26,7 @@ const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="">
       {children}
     </div>
   );
