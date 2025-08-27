@@ -1,32 +1,51 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Environment, Center } from "@react-three/drei";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Github, Linkedin, Mail, MapPin, Code, Briefcase, User, Download } from "lucide-react";
+
+import Loading from "../components/Loading";
 
 
 function Model() {
-  const { scene } = useGLTF("/3d_models/jin_kazama.glb");
-  const modelRef = useRef({});
+    const { scene } = useGLTF("/3d_models/jin_kazama.glb");
+    const modelRef = useRef<THREE.Object3D>(null!);
 
-  // Rotate model continuously on X axis
-  useFrame(() => {
-    if (modelRef.current) {
-      modelRef.current.rotation.y += 0.01; // speed of rotation
+        // Rotate model continuously on X axis
+        useFrame(() => {
+            if (modelRef.current) {
+                modelRef.current.rotation.y += 0.01; // speed of rotation
+            }
+        });
+    
+        return <primitive ref={modelRef} object={scene} scale={1} />;
     }
-  });
-
-  return <primitive ref={modelRef} object={scene} scale={1} />;
-}
 
 function ProfilePage() {
-  const [activeSection, setActiveSection] = useState('about');
+
+    const [loading, setLoading] = useState(true);
+    const [activeSection, setActiveSection] = useState('about');
+
+    useEffect(() => {
+        // turn off loading after 3 seconds
+        const timer = setTimeout(() => setLoading(false), 3000);
+        return () => clearTimeout(timer); // cleanup
+    }, []);
+
+    if (loading)
+    {
+        return (
+            <div>
+                <Loading></Loading>
+            </div>
+        );
+    }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       {/* Header */}
       <div className="flex flex-col justify-center items-center pt-16 pb-8">
         {/* Gradient text */}
-        <div className="text-6xl font-black mb-4 bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-600 bg-clip-text text-transparent">
+        <div className="text-6xl font-black mb-4 bg-gradient-to-r animate-bounce from-yellow-400 via-orange-400 to-yellow-600 bg-clip-text text-transparent">
           Hello, Azeem Amjad
         </div>
         <div className="text-xl text-gray-300 mb-2">Full Stack Developer & 3D Enthusiast</div>
